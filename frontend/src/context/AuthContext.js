@@ -1,7 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
+const API_URL = process.env.REACT_APP_API_URL; // Base URL from .env
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -16,22 +17,16 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      loadUser();
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
-
-  const loadUser = async () => {
+  // Load user function
+  const loadUser = useCallback(async () => {
+    if (!token) return setLoading(false); // Extra safety
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       };
-      const response = await axios.get('http://localhost:5000/api/auth/me', config);
+      const response = await axios.get(`${API_URL}/api/auth/me`, config);
       setUser(response.data.data.user);
     } catch (error) {
       console.error('Load user error:', error);
@@ -39,12 +34,18 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
+  // Run loadUser on mount or when token changes
+  useEffect(() => {
+    loadUser();
+  }, [token, loadUser]);
+
+  // Login
   const login = async (email, password) => {
-    const response = await axios.post('http://localhost:5000/api/auth/login', {
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
       email,
-      password
+      password,
     });
     const { token: newToken, user: newUser } = response.data.data;
     setToken(newToken);
@@ -53,11 +54,12 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  // Register
   const register = async (name, email, password) => {
-    const response = await axios.post('http://localhost:5000/api/auth/register', {
+    const response = await axios.post(`${API_URL}/api/auth/register`, {
       name,
       email,
-      password
+      password,
     });
     const { token: newToken, user: newUser } = response.data.data;
     setToken(newToken);
@@ -66,6 +68,7 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
+  // Logout
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -79,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
