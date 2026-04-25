@@ -2,7 +2,7 @@
 
 A full-stack web application that uses Google's Gemini AI to analyze resumes against job descriptions, providing detailed feedback, skill gap analysis, and improvement suggestions.
 
-## 🚀 Features
+## Features
 
 ### Authentication
 - **User Registration & Login**: Secure JWT-based authentication
@@ -238,23 +238,7 @@ The frontend will run on `http://localhost:3000`
 - CORS configuration
 - Input sanitization
 
-## 🚀 Deployment
 
-### Backend Deployment (e.g., Heroku, Railway)
-
-1. Set environment variables on your platform
-2. Update `MONGODB_URI` to production database
-3. Update `CLIENT_URL` to production frontend URL
-4. Deploy backend code
-
-### Frontend Deployment (e.g., Vercel, Netlify)
-
-1. Update API base URL in `src/services/api.js`
-2. Build the project:
-```bash
-npm run build
-```
-3. Deploy the `build` folder
 
 ## 🤝 Contributing
 
@@ -264,9 +248,6 @@ npm run build
 4. Push to the branch
 5. Open a Pull Request
 
-## 📄 License
-
-This project is open source and available under the MIT License.
 
 ## 💡 Future Enhancements
 
